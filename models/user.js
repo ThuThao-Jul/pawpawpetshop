@@ -4,14 +4,24 @@ const Schema = mongoose.Schema;
 
 const userSchema = Schema({
     name: String,
+    role: {
+        type: String,
+        enum: {
+            values: ["user", "admin"]
+        },
+        default: "user"
+    },
     email: {type: String, require: true, unique: true},
     password: {type: String, require: true},
-    pet: [{type: Schema.ObjectId, ref: "Pet"}],
-    cart: [{type: Schema.ObjectId, ref: "Product"}],
-    order: [{type: Schema.ObjectId, ref: "Order"}],
-    schedule: [{type: Schema.ObjectId, ref: "Schedule"}],
+    pet: [{type: Schema.Types.ObjectId, ref: "Pet"}],
+    cart: [{type: Schema.Types.ObjectId, ref: "Product"}],
+    order: [{type: Schema.Types.ObjectId, ref: "Order"}],
+    schedule: [{type: Schema.Types.ObjectId, ref: "Schedule"}],
     point: {type: Number, default: 0},
-    reward: [{type: Schema.ObjectId, ref: "Product"}],
+    reward: [{
+        item: {type: Schema.Types.ObjectId, ref: "Product"},
+        isReceived: {type: Boolean, default: false}
+    }],
 },
 {
     timestamps: true,

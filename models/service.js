@@ -14,6 +14,9 @@ const serviceSchema = Schema({
     description: {type: String, require: true},
     images: {type: String, require: true},
     isBooked: [{type: Schema.ObjectId, ref: "Schedule"}],
+},
+{
+    timestamps: true,
 });
 
 const Service = mongoose.model('Service', serviceSchema);
