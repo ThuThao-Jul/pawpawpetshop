@@ -13,7 +13,7 @@ const serviceSchema = Schema({
     price: {type: Number},
     description: {type: String, require: true},
     images: {type: String, require: true},
-    isBooked: [{type: Schema.ObjectId, ref: "Schedule"}],
+    isBooked: [{type: Schema.Types.ObjectId, ref: "Schedule"}],
 },
 {
     timestamps: true,

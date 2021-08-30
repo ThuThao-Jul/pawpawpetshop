@@ -18,7 +18,7 @@ productController.getAll = async (req,res,next) => {
         const totalPages = Math.ceil(totalProducts/limit);
         const offset = limit*(page -1);
 
-        const products = await Products.find(filter)
+        const products = await Products.find({filter})
         .sort({createAt: "desc"})
         .skip(offset)
         .limit(limit)

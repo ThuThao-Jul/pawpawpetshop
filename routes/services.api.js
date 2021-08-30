@@ -4,19 +4,19 @@ const router = express.Router();
 
 // type = spa || healthcare
 /**
- * @route GET /api/services/:type
+ * @route GET /api/services/ (query: type = spa || healthcare)
  * @description get all service information (combo, doctors available time...)
  * @access public
  */
-router.get('/:type', serviceController.getInfo);
+router.get('/', serviceController.getInfo);
 
 
 /**
- * @route POST /api/service/:type
+ * @route POST /api/service/
  * @description create new booking
  * @access login required
  */
-router.post('/:type', serviceController.booking);
+router.post('/:id', serviceController.booking);
 
 /**
  * @route PUT /api/service/:id
@@ -31,7 +31,7 @@ router.put('/:id', serviceController.updateBooking);
  * @description get dashboard data
  * @access admin
  */
-router.get('/dashboard', serviceController.dashboard)
+// router.get('/dashboard', serviceController.dashboard)
 
 
 module.exports = router;

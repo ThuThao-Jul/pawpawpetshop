@@ -20,5 +20,9 @@ router.use('/categories', categoryApi);
 const serviceApi = require('./services.api');
 router.use('/services', serviceApi);
 
+/* Auth endpoint */
+const authApi = require('./auth.api');
+router.use('/auth', authApi);
+
 
 module.exports = router;

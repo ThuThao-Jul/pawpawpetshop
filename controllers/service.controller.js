@@ -1,11 +1,11 @@
 const utilHelper = require('../helpers/utils.helper');
+const Schedule = require('../models/schedule');
 const Service = require('../models/service')
 const serviceController = {};
 
 serviceController.getInfo = async (req,res,next) => {
     try {
-        let type = req.params.type;
-        let {from, to,...filter} = {...req.query};
+        let {type, from, to,...filter} = {...req.query};
         from = parseInt(from) || 0;
         to = parseInt(to) || 50000000;
 
@@ -31,27 +31,59 @@ serviceController.getInfo = async (req,res,next) => {
 
 serviceController.booking = async (req,res,next) => {
     try {
-        console.log('create a new spa service or combo')
+        let {
+            owner,
+            service,
+            date,
+            time,
+        } = req.body;
+
+        let schedule = await Schedule.create({
+            owner,
+            service,
+            date,
+            time,
+        });
+
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            { schedule },
+            null,
+            "Create new schedule successfully."
+        )
     } catch (error) {
         next(error)
     }
 };
 
-serviceController.updateBooking = (req,res,next) => {
+serviceController.updateBooking = async (req,res,next) => {
     try {
-        console.log('update spa available time')
+        let serviceId = req.params.id;
+        let { isDone } = req.body;
+
+        let service = await Schedule.findByIdAndUpdate(serviceId, { isDone });
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            {service},
+            null,
+            "Update schedule status successfully."
+        )
     } catch (error) {
         next(error)
     }
 };
 
-serviceController.dashboard = (req,res,next) => {
-    try {
-        console.log('get spa dashboard')
-    } catch (error) {
-        next(error)
-    }
-}
+// serviceController.dashboard = (req,res,next) => {
+//     try {
+//         console.log('get spa dashboard')
+//     } catch (error) {
+//         next(error)
+//     }
+// }
 
 
 
