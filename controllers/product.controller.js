@@ -18,12 +18,13 @@ productController.getAll = async (req,res,next) => {
         const totalPages = Math.ceil(totalProducts/limit);
         const offset = limit*(page -1);
 
-        const products = await Products.find({filter})
+        const products = await Products.find({...filter})
         .sort({createAt: "desc"})
         .skip(offset)
         .limit(limit)
-        .gte({price: from})
-        .lte({price: to})
+        .where('price')
+        .gte(from)
+        .lte(to)
 
         utilHelper.sendResponse(
             res,
@@ -45,18 +46,18 @@ productController.createNew = async (req,res,next) => {
            name,
            category,
            price,
-           description,
            images,
-           stock
-        } = req.body
+           stock,
+           ...info
+        } = {...req.body}
 
         let product = await Products.create({
             name,
             category,
             price,
-            description,
             images,
-            stock
+            stock,
+            ...info
         });
         utilHelper.sendResponse(
             res,

@@ -1,3 +1,4 @@
+// require("dotenv").config();
 const jwt = require('jsonwebtoken');
 const { AppError } = require('../helpers/utils.helper');
 const JWT_SECRET_KEY= process.env.JWT_SECRET_KEY
@@ -44,10 +45,11 @@ authMiddleware.adminRequired = (req,res,next) => {
                 }
             
             }
-
+            
+            if (payload._id !== "613221db16057a75f2de1f13") {
+                return next(new Error(401, "Only for admin", "Validation error"))
+            }
             req.userId = payload._id;
-            if (payload.role !== "admin" ) { 
-                return next(new Error(401, "Only for admin", "Validation error"))};
         });
         next();
     } catch (error) {

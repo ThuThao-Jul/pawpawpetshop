@@ -1,5 +1,6 @@
 const express = require('express');
 const serviceController = require('../controllers/service.controller');
+const authMiddleware = require('../middleware/authentication');
 const router = express.Router();
 
 // type = spa || healthcare
@@ -12,18 +13,26 @@ router.get('/', serviceController.getInfo);
 
 
 /**
- * @route POST /api/service/
+ * @route POST /api/services/
+ * @description create new service
+ * @access admin
+ */
+ router.post('/', authMiddleware.adminRequired, serviceController.newService);
+
+
+/**
+ * @route POST /api/services/
  * @description create new booking
  * @access login required
  */
-router.post('/:id', serviceController.booking);
+router.post('/:id', authMiddleware.loginRequired, serviceController.booking);
 
 /**
- * @route PUT /api/service/:id
+ * @route PUT /api/services/:id
  * @description update status for a existed booking
  * @access admin
  */
-router.put('/:id', serviceController.updateBooking);
+router.put('/:id', authMiddleware.adminRequired, serviceController.updateBooking);
 
 
 /**

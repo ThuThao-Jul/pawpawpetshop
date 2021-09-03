@@ -2,13 +2,13 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+require("dotenv").config();
 const cors = require('cors')
 
 const indexRouter = require('./routes/index');
 const mongoose = require('mongoose');
 
 const app = express();
-require("dotenv").config();
 const DATABASE_URL = process.env.DATABASE_URL;
 app.use(cors());
 app.use(logger('dev'));

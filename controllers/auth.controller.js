@@ -31,7 +31,7 @@ authController.register = async (req,res,next) => {
             res,
             200,
             true,
-            { user },
+            { user, accessToken },
             null,
             "Create new account successfully."
         )

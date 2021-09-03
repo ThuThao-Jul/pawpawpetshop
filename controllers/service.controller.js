@@ -5,15 +5,16 @@ const serviceController = {};
 
 serviceController.getInfo = async (req,res,next) => {
     try {
-        let {type, from, to,...filter} = {...req.query};
+        let {from, to,...filter} = {...req.query};
         from = parseInt(from) || 0;
         to = parseInt(to) || 50000000;
 
-        const service = await Service.find({type: type, filter})
+        const service = await Service.find({...filter})
         .sort({createAt: "desc"})
         .populate('isBooked')
-        .gte({price: from})
-        .lte({price: to})
+        .where('price')
+        .gte(from)
+        .lte(to)
 
         utilHelper.sendResponse(
             res,
@@ -29,17 +30,46 @@ serviceController.getInfo = async (req,res,next) => {
     }
 };
 
-serviceController.booking = async (req,res,next) => {
+serviceController.newService = async (req,res,next)=> {
     try {
         let {
-            owner,
-            service,
+            name,
+            type,
+            price,
+            description,
+            images,
+        } = req.body;
+
+        let service = await Service.create({
+            name,
+            type,
+            price,
+            description,
+            images
+        })
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            {service},
+            null,
+            "Create new service successfully."
+        )
+    } catch (error) {
+        next(error)
+    }
+}
+
+serviceController.booking = async (req,res,next) => {
+    try {
+        service = req.params.id;
+        let {
             date,
             time,
         } = req.body;
 
         let schedule = await Schedule.create({
-            owner,
+            owner: req.userId,
             service,
             date,
             time,

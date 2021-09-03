@@ -1,5 +1,6 @@
 const express = require('express');
 const productController = require('../controllers/product.controller');
+const authMiddleware = require('../middleware/authentication');
 const router = express.Router();
 
 /**
@@ -15,7 +16,7 @@ router.get("/", productController.getAll);
  * @description create new product
  * @access admin 
  */
-router.post("/", productController.createNew);
+router.post("/", authMiddleware.adminRequired, productController.createNew);
 
 
 /**
@@ -23,7 +24,7 @@ router.post("/", productController.createNew);
  * @description edit a product
  * @access admin
  */
-router.put("/:id", productController.editProduct);
+router.put("/:id", authMiddleware.adminRequired, productController.editProduct);
 
 
 /**
@@ -31,7 +32,7 @@ router.put("/:id", productController.editProduct);
  * @description delete a product
  * @access admin
  */
-router.delete('/id', productController.deleteProduct);
+router.delete('/id', authMiddleware.adminRequired, productController.deleteProduct);
 
 
 

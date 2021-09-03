@@ -6,6 +6,7 @@ const scheduleSchema = Schema({
     service: {type: Schema.Types.ObjectId, ref: "Service"},
     date: {type: Date, require: true},
     time: {
+        require: true,
         type: String,
         enum: {
             values: ['8:30 AM', '9:30 AM', '10:30 AM', '2:00 PM', '3:00 PM', '4:00 PM']
