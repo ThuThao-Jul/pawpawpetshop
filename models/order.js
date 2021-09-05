@@ -4,10 +4,7 @@ const Schema = mongoose.Schema;
 
 const orderSchema = Schema({
     owner: {type: Schema.Types.ObjectId, ref: "User"},
-    order: [{
-       item: {type: Schema.Types.ObjectId, ref: "Product"},
-       quantity: {type: Number, require: true}
-    }],
+    order: [{type: Schema.Types.ObjectId, ref: "Cart"}],
     address: {type: String, require: true},
     phone: {type: String, require: true},
     isPaid: {type: Boolean, default: false}

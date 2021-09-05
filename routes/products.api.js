@@ -10,6 +10,12 @@ const router = express.Router();
  */
 router.get("/", productController.getAll);
 
+/**
+ * @route GET api/products/:id
+ * @description get single product
+ * @access public
+ */
+router.get("/:id", productController.getSingleProduct);
 
 /**
  * @route POST api/products

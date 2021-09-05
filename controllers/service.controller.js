@@ -1,6 +1,7 @@
 const utilHelper = require('../helpers/utils.helper');
 const Schedule = require('../models/schedule');
-const Service = require('../models/service')
+const Service = require('../models/service');
+const User = require('../models/user');
 const serviceController = {};
 
 serviceController.getInfo = async (req,res,next) => {
@@ -62,7 +63,7 @@ serviceController.newService = async (req,res,next)=> {
 
 serviceController.booking = async (req,res,next) => {
     try {
-        service = req.params.id;
+        let serviceId = req.params.id;
         let {
             date,
             time,
@@ -70,16 +71,24 @@ serviceController.booking = async (req,res,next) => {
 
         let schedule = await Schedule.create({
             owner: req.userId,
-            service,
+            service: serviceId,
             date,
             time,
         });
+        let scheduleId = await schedule._id;
+        let newSchedule = await Schedule.findById(scheduleId)
+        .populate('service');
+                
+        //update in user
+        let user = await User.findById(req.userId);
+        user.schedule.push(scheduleId);
+        await user.save();
 
         utilHelper.sendResponse(
             res,
             200,
             true,
-            { schedule },
+            { newSchedule },
             null,
             "Create new schedule successfully."
         )

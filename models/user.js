@@ -15,7 +15,7 @@ const userSchema = Schema({
     email: {type: String, require: true, unique: true},
     password: {type: String, require: true},
     pet: [{type: Schema.Types.ObjectId, ref: "Pet"}],
-    cart: [{type: Schema.Types.ObjectId, ref: "Product"}],
+    cart: [{type: Schema.Types.ObjectId, ref: "Cart"}],
     order: [{type: Schema.Types.ObjectId, ref: "Order"}],
     schedule: [{type: Schema.Types.ObjectId, ref: "Schedule"}],
     point: {type: Number, default: 0},

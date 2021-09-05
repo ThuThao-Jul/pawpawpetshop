@@ -40,6 +40,23 @@ productController.getAll = async (req,res,next) => {
     }
 };
 
+productController.getSingleProduct = async(req,res,next)=> {
+    try {
+        let productId = req.params.id;
+        let product = await Products.find(productId);
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            (product),
+            null,
+            "Get single product successfully."
+        )
+    } catch (error) {
+        next(error)
+    }
+}
+
 productController.createNew = async (req,res,next) => {
     try {
         let {

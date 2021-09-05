@@ -21,7 +21,7 @@ router.get('/', serviceController.getInfo);
 
 
 /**
- * @route POST /api/services/
+ * @route POST /api/services/:id
  * @description create new booking
  * @access login required
  */

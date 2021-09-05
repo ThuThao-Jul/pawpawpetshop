@@ -24,5 +24,10 @@ router.use('/services', serviceApi);
 const authApi = require('./auth.api');
 router.use('/auth', authApi);
 
+/* User endpoint */
+const userApi = require('./user.api');
+const authMiddleware = require('../middleware/authentication');
+router.use('/user', authMiddleware.loginRequired, userApi)
+
 
 module.exports = router;
