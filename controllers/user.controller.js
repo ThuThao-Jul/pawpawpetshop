@@ -12,6 +12,7 @@ userController.getProfile = async (req,res,next)=> {
         let user = await User.findById(id)
         .populate({
             path: 'cart', 
+            match: { isDeleted: false },
             populate: {
                 path: 'product'
         }})
@@ -24,7 +25,7 @@ userController.getProfile = async (req,res,next)=> {
         .populate({
             path: 'order',
             populate: {
-                path: 'product'
+                path: 'order', select: ['product', 'quantity']
             }
         })
 
@@ -80,7 +81,7 @@ userController.addToCart = async(req,res,next)=> {
             true,
             {cart},
             null,
-            "Added to cart successfully."
+            "Update cart successfully."
         )
     } catch (error) {
         next(error)
@@ -108,18 +109,23 @@ userController.deleteCart = async(req,res,next) => {
 
 userController.order= async(req,res,next) =>{
     try {
-        let cart = await Cart.find({owner: req.userId});
+        let cart = await Cart.find({owner: req.userId})
+        .populate('product');
+
+        if (cart.length) {
+        let totalCost = 0;
+        cart.map((c) => totalCost+= c.product.price*c.quantity);
         let {
             address,
             phone
         } = req.body;
 
-        if (cart.length) {
         let order = await Order.create({
             owner: req.userId,
             order: cart,
             address,
-            phone
+            phone,
+            totalCost
         });
 
         let orderId = order._id;
@@ -130,10 +136,15 @@ userController.order= async(req,res,next) =>{
                 path: 'product'
             }
         });
-
+        
+        //update in user data
+        let user = await User.findById(req.userId);
+        user.order.push(orderId);
+        await user.save();
+        
         //delete cart
-        await Cart.deleteMany({owner: req.userId});
-        await User.findByIdAndUpdate(req.userId, {cart: []});
+        await Cart.updateMany({owner: req.userId}, {isDeleted: true});
+        // await User.findByIdAndUpdate(req.userId, {cart: []});
 
         utilHelper.sendResponse(
             res,
@@ -153,6 +164,8 @@ userController.deleteOrder= async (req,res,next) => {
     try {
         let orderId = req.params.id;
         await Order.findByIdAndDelete(orderId);
+
+        //update in user data
         let user = await User.findById(req.userId);
         user.order.splice(user.order.indexOf(orderId), 1);
         await user.save();
@@ -174,7 +187,9 @@ userController.deleteOrder= async (req,res,next) => {
 userController.payment= async(req,res,next) => {
     try {
         let orderId = req.params.id;
-        let paid = await Order.findByIdAndUpdate(orderId, {isPaid: true});
+        let paid = await Order.findByIdAndUpdate(orderId, {isPaid: true})
+        .populate('order', ['product', 'quantity']);
+        
 
         utilHelper.sendResponse(
             res,

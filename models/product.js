@@ -8,7 +8,6 @@ const productSchema = Schema({
     price: {type: Number, require: true},
     description: {type: String},
     images: [{type: String, require: true}],
-    stock: {type: Number, require: true}
 },
 {
     timestamps: true,

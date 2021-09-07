@@ -7,6 +7,7 @@ const orderSchema = Schema({
     order: [{type: Schema.Types.ObjectId, ref: "Cart"}],
     address: {type: String, require: true},
     phone: {type: String, require: true},
+    totalCost: Number,
     isPaid: {type: Boolean, default: false}
 },
 {

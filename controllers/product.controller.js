@@ -64,7 +64,6 @@ productController.createNew = async (req,res,next) => {
            category,
            price,
            images,
-           stock,
            ...info
         } = {...req.body}
 
