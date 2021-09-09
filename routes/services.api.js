@@ -28,11 +28,11 @@ router.get('/', serviceController.getInfo);
 router.post('/:id', authMiddleware.loginRequired, serviceController.booking);
 
 /**
- * @route PUT /api/services/:id
+ * @route PUT /api/services/booking/:id
  * @description update status for a existed booking
  * @access admin
  */
-router.put('/:id', authMiddleware.adminRequired, serviceController.updateBooking);
+router.put('/booking/:id', authMiddleware.adminRequired, serviceController.updateBooking);
 
 
 /**

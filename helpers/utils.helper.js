@@ -1,4 +1,8 @@
 "use trisct";
+
+const { findById } = require("../models/user");
+const User = require("../models/user");
+
 const utilHelper = {};
 
 
@@ -12,6 +16,36 @@ utilHelper.sendResponse = (res, status, success, data, error, message) => {
     if(message) response.message = message;
     return res.status(status).json(response)
 };
+
+utilHelper.updatePoint= async (userId, totalCost) => {
+    let addedPoint = totalCost*0.001;
+    let user = await User.findByIdAndUpdate(userId, { $inc: {point: addedPoint}});
+    let updatedUser = await User.findById(userId);
+    let point = updatedUser.point;
+    let tier = updatedUser.tier;
+
+    if(point>=800 && tier==='bronze'){
+        user = await User.findByIdAndUpdate(userId, {tier: 'silver'});
+        user.reward.push({
+            item: '613256c90187fc9cb1e44969',
+        });
+        await user.save();
+    };
+    if(point>=3500 && tier==='silver'){
+        user = await User.findByIdAndUpdate(userId, {tier: 'gold'});
+        user.reward.push({
+            item: '61324cbdf5edc4a41768b08d'
+        });
+        await user.save();
+    };
+    if(point>=8000 && tier==='gold'){
+        user = await User.findByIdAndUpdate(userId, {tier: 'platinum'});
+        user.reward.push({
+            item: '61324cbdf5edc4a41768b08d'
+        });
+        await user.save();
+    }
+}
 
 
 utilHelper.catchAsync = (func) => (res,req,next) =>

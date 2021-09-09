@@ -12,7 +12,7 @@ const serviceSchema = Schema({
     },
     price: {type: Number},
     description: {type: String, require: true},
-    images: {type: String, require: true},
+    images: {type: String},
 },
 {
     timestamps: true,

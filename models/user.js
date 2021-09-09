@@ -18,7 +18,12 @@ const userSchema = Schema({
     cart: [{type: Schema.Types.ObjectId, ref: "Cart"}],
     order: [{type: Schema.Types.ObjectId, ref: "Order"}],
     schedule: [{type: Schema.Types.ObjectId, ref: "Schedule"}],
-    point: {type: Number, default: 0},
+    point: {type: Number, default: 0}, //0,1%
+    tier: {
+        type:String,
+        enum: {values: ['bronze', 'silver', 'gold', 'platinum']}, //[<800, >=800, >=3500, >=8000]
+        default: 'bronze',
+    },
     reward: [{
         item: {type: Schema.Types.ObjectId, ref: "Product"},
         isReceived: {type: Boolean, default: false}

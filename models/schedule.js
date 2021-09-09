@@ -12,6 +12,7 @@ const scheduleSchema = Schema({
             values: ['8:30 AM', '9:30 AM', '10:30 AM', '2:00 PM', '3:00 PM', '4:00 PM']
         }
     },
+    totalCost: Number,
     isDone: {type: Boolean, default: false},
 },
 {

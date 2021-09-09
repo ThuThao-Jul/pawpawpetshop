@@ -28,6 +28,7 @@ userController.getProfile = async (req,res,next)=> {
                 path: 'order', select: ['product', 'quantity']
             }
         })
+        .populate('pet');
 
         utilHelper.sendResponse(
             res,
@@ -190,7 +191,11 @@ userController.payment= async(req,res,next) => {
         let paid = await Order.findByIdAndUpdate(orderId, {isPaid: true})
         .populate('order', ['product', 'quantity']);
         
-
+        //update user's point
+        let order = await Order.findById(orderId);
+        let totalCost = order.totalCost;
+        utilHelper.updatePoint(req.userId, totalCost);
+        
         utilHelper.sendResponse(
             res,
             200,

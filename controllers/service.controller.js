@@ -38,15 +38,15 @@ serviceController.newService = async (req,res,next)=> {
             type,
             price,
             description,
-            images,
-        } = req.body;
+            ...data
+        } = {...req.body};
 
         let service = await Service.create({
             name,
             type,
             price,
             description,
-            images
+            ...data
         })
         utilHelper.sendResponse(
             res,
@@ -99,10 +99,17 @@ serviceController.booking = async (req,res,next) => {
 
 serviceController.updateBooking = async (req,res,next) => {
     try {
-        let serviceId = req.params.id;
-        let { isDone } = req.body;
+        let bookingId = req.params.id;
+        let { totalCost, isDone } = req.body;
+        let booking = await Schedule.findById(bookingId);
+        let userId = booking.owner;
 
-        let service = await Schedule.findByIdAndUpdate(serviceId, { isDone });
+        //update user's point
+        if(isDone) {
+            utilHelper.updatePoint(userId, totalCost);
+        };
+
+        let service = await Schedule.findByIdAndUpdate(bookingId, { totalCost, isDone });
         utilHelper.sendResponse(
             res,
             200,
