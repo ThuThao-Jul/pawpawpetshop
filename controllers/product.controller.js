@@ -40,6 +40,23 @@ productController.getAll = async (req,res,next) => {
     }
 };
 
+productController.getAllCategories = async(req,res,next)=>{
+    try {
+        const categories = ['food', 'snack & milk', 'toy', 'pet care', 'beauty']
+
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            { categories },
+            null,
+            "Get all categories successfully."
+        )
+    } catch (error) {
+        next(error)
+    }
+}
+
 productController.getSingleProduct = async(req,res,next)=> {
     try {
         let productId = req.params.id;
@@ -72,7 +89,6 @@ productController.createNew = async (req,res,next) => {
             category,
             price,
             images,
-            stock,
             ...info
         });
         utilHelper.sendResponse(

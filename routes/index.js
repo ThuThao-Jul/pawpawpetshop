@@ -11,11 +11,6 @@ const productApi = require("./products.api");
 router.use("/products", productApi);
 
 
-//category endpoint
-const categoryApi  = require('./categories.api');
-router.use('/categories', categoryApi);
-
-
 /* service endpoint */
 const serviceApi = require('./services.api');
 router.use('/services', serviceApi);
@@ -31,7 +26,11 @@ router.use('/user', authMiddleware.loginRequired, userApi);
 
 /* Pet endpoint */
 const petApi = require("./pet.api");
-router.use('/pet', authMiddleware.loginRequired, petApi);
+router.use('/pet', petApi);
+
+/* Competition endppoint */
+const competitionApi = require("./competition.api");
+router.use('/competition',competitionApi);
 
 
 module.exports = router;

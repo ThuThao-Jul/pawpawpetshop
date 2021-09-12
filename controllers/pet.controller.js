@@ -6,7 +6,8 @@ const petController = {};
 
 petController.getPets = async(req,res,next)=> {
     try {
-        let pets = await Pet.find({owner: req.userId});
+        let ownerId = req.query;
+        let pets = await Pet.find({owner: ownerId});
 
         utilHelper.sendResponse(
             res,

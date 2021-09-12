@@ -9,11 +9,12 @@ const petSchema = Schema({
     male: Boolean,  
     type: {
         type: String,
-        enum: {
-            values: ["dog", "cat", "other"]
-        },
+        enum: ["dog", "cat", "other"],
         require: true,
     },
+    images: [{type: String}],
+    videos: [{type: String}],
+    description: String,
     vaccinationRecord: Date,
     medicalRecord: String,
 },

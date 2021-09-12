@@ -1,12 +1,13 @@
 const express = require('express');
 const petController = require('../controllers/pet.controller');
+const authMiddleware = require('../middleware/authentication');
 const router = express.Router();
 
 
 /**
  * @route GET api/pet
  * @description get all pets of a specific account
- * @access login required
+ * @access public
  */
 router.get('/', petController.getPets);
 
@@ -14,7 +15,7 @@ router.get('/', petController.getPets);
 /**
  * @route GET api/pet/:id
  * @description get single pet
- * @access login required
+ * @access public
  */
 router.get('/:id', petController.getSinglePet);
 
@@ -23,7 +24,7 @@ router.get('/:id', petController.getSinglePet);
  * @description create a new pet
  * @access login required
  */
-router.post('/', petController.createNewPet);
+router.post('/', authMiddleware.loginRequired, petController.createNewPet);
 
 /**
  * @route PUT api/pet/:id

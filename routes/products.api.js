@@ -11,6 +11,13 @@ const router = express.Router();
 router.get("/", productController.getAll);
 
 /**
+ * @route GET api/products/categories
+ * @description get all categories
+ * @access public
+ */
+ router.get("/categories", productController.getAllCategories);
+
+/**
  * @route GET api/products/:id
  * @description get single product
  * @access public

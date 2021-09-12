@@ -51,8 +51,13 @@ userController.addToCart = async(req,res,next)=> {
         let cartId = '';
           
         // check if there is duplicated product
-        let duplicatedProduct = await Cart.find({owner: req.userId, product: productId});
+        let duplicatedProduct = await Cart.find({
+            owner: req.userId, 
+            product: productId,
+            isDeleted: false
+    });
         if (duplicatedProduct.length) {
+            console.log('there is duplication')
             cartId = duplicatedProduct[0]._id;
             if (quantity<=0) {
                 //remove the product if quantity = 0
@@ -63,6 +68,7 @@ userController.addToCart = async(req,res,next)=> {
                 await Cart.findByIdAndUpdate(cartId, {quantity: quantity});
             }
         } else {
+            console.log('no duplication')
             // create new cart if there is no duplication
            let cart = await Cart.create({
                owner: req.userId,
@@ -92,7 +98,7 @@ userController.addToCart = async(req,res,next)=> {
 
 userController.deleteCart = async(req,res,next) => {
     try {
-        await Cart.deleteMany({owner: req.userId});
+        await Cart.deleteMany({owner: req.userId, isDeleted: false});
         await User.findByIdAndUpdate(req.userId, {cart: []});
         utilHelper.sendResponse(
             res,
@@ -110,25 +116,42 @@ userController.deleteCart = async(req,res,next) => {
 
 userController.order= async(req,res,next) =>{
     try {
-        let cart = await Cart.find({owner: req.userId})
-        .populate('product');
-
+        let cart = await Cart.find({owner: req.userId, isDeleted: false})
+        .populate('product', 'price');
+        let user = await User.findOne({_id: req.userId});
+        
         if (cart.length) {
         let totalCost = 0;
+        let discount = 0;
         cart.map((c) => totalCost+= c.product.price*c.quantity);
+        
+        //discount for member
+        if (user.tier==='silver'){
+            discount = 0.05;
+        };
+        if(user.tier==='gold'){
+            discount = 0.1;
+        };
+        if(user.tier==='platinum'){
+            discount = 0.15;
+        }
+
         let {
             address,
             phone
         } = req.body;
+        let finalCost = totalCost*(1-discount);
 
         let order = await Order.create({
             owner: req.userId,
             order: cart,
             address,
             phone,
-            totalCost
+            totalCost,
+            discount,
+            finalCost
         });
-
+        
         let orderId = order._id;
         let newOrder = await Order.findById(orderId)
         .populate({
@@ -137,12 +160,11 @@ userController.order= async(req,res,next) =>{
                 path: 'product'
             }
         });
-        
         //update in user data
-        let user = await User.findById(req.userId);
+        await User.findById(req.userId);
         user.order.push(orderId);
         await user.save();
-        
+
         //delete cart
         await Cart.updateMany({owner: req.userId}, {isDeleted: true});
         // await User.findByIdAndUpdate(req.userId, {cart: []});
@@ -193,7 +215,7 @@ userController.payment= async(req,res,next) => {
         
         //update user's point
         let order = await Order.findById(orderId);
-        let totalCost = order.totalCost;
+        let totalCost = order.finalCost;
         utilHelper.updatePoint(req.userId, totalCost);
         
         utilHelper.sendResponse(

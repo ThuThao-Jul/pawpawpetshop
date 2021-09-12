@@ -8,6 +8,8 @@ const orderSchema = Schema({
     address: {type: String, require: true},
     phone: {type: String, require: true},
     totalCost: Number,
+    discount: Number,
+    finalCost: Number,
     isPaid: {type: Boolean, default: false}
 },
 {
