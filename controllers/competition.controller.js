@@ -31,6 +31,52 @@ competitionController.getProfiles = async(req,res,next) => {
     }
 };
 
+competitionController.getAll=async(req,res,next)=>{
+    try {
+        let {page, limit} = {...req.query};
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 10;
+
+        const totalCompetitions = await Competition.countDocuments();
+        const totalPages = Math.ceil(totalCompetitions/limit);
+        const offset = limit*(page-1);
+
+        const competitions = await Competition.find()
+        .sort({createAt: -1})
+        .skip(offset)
+        .limit(limit)
+
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            {competitions, totalPages},
+            null,
+            "Get all competitions successfully."
+        )
+    } catch (error) {
+        next(error)
+    }
+};
+
+competitionController.getSingleCompetition =async(req,res,next)=>{
+    try {
+        let competitionId = req.params.id;
+        let competition = await Competition.findById(competitionId);
+
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            {competition},
+            null,
+            "Get single competition successfully."
+        )
+    } catch (error) {
+        
+    }
+};
+
 competitionController.createNewCompetition = async(req,res,next)=>{
     try {
         let {
@@ -69,21 +115,49 @@ competitionController.updateVote = async(req,res,next)=> {
             numberOfVote 
         }] = req.body;
         let competitionId = req.params.id;
+
+        //check if these votes are in time
         let competition = await Competition.findOne({_id: competitionId});
-        req.body.map((v) =>
-            competition.competitors.map((c) => c.pet==v.pet ? c.vote+=v.numberOfVote : c.vote+=0)
-        )
-        await competition.save()
+        console.log('compare 1',new Date() >= competition.from);
+        console.log('compare 2',new Date() <= competition.to)
+        if (new Date() >= competition.from && new Date() <= competition.to){
+            req.body.map((v) =>
+                competition.competitors.map((c) => c.pet==v.pet ? c.vote+=v.numberOfVote : c.vote+=0)
+            )
+            await competition.save();
+            utilHelper.sendResponse(
+                res,
+                200,
+                true,
+                null,
+                null,
+                "Voted successfully."
+            );
+        } else next(new Error('This competition has been closed.'))
+    } catch (error) {
+        next(error)
+    }
+};
+
+competitionController.getRanking = async(req,res,next)=>{
+    try {
+        let competitionId = req.params.id;
+        let competition = await Competition.findOne({_id: competitionId});
+       
+        //sort by desc num of vote
+        let competitors = competition.competitors.sort(function(a,b){
+            return b.vote - a.vote;
+        });
+
         
         utilHelper.sendResponse(
             res,
             200,
             true,
+            {competitors},
             null,
-            null,
-            "Voted successfully."
+            "You found the winner."
         )
-        
     } catch (error) {
         next(error)
     }
@@ -92,29 +166,19 @@ competitionController.updateVote = async(req,res,next)=> {
 competitionController.updateWinner = async(req,res,next)=>{
     try {
         let competitionId = req.params.id;
-        let competition = await Competition.findOne({_id: competitionId});
-        let winner = '';
-        let maxVote = 0;
-        competition.competitors.map((c)=> {
-            if(c.vote > maxVote){
-                maxVote = c.vote;
-                winner = c.pet;
-            }
-        });
-
-        let update = await Competition.findByIdAndUpdate(competitionId, {result: {winner, vote: maxVote}});
-        let result = await Competition.findById(update._id)
+        let {winner} = req.body;
+        await Competition.findByIdAndUpdate(competitionId,{result: winner});
         utilHelper.sendResponse(
             res,
             200,
             true,
-            {result},
             null,
-            "You found the winner."
+            null,
+            "Update winner successfully."
         )
     } catch (error) {
         next(error)
     }
-};
+}
 
 module.exports = competitionController;
