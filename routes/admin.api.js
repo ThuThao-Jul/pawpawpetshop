@@ -7,14 +7,14 @@ const router = express.Router();
  * @description get total revenue
  * @access admin
  */
- router.put('/revenue', adminController.getRevenue);
+ router.get('/revenue', adminController.getRevenue);
 
  /**
  * @route GET api/admin/orders
  * @description get paid orders
  * @access admin
  */
-  router.put('/orders', adminController.getPaidOrders);
+  router.get('/orders', adminController.getPaidOrders);
 
 /**
  * @route PUT api/admin/orders/:id

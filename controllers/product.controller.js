@@ -5,12 +5,12 @@ const productController = {};
 
 productController.getAll = async (req,res,next) => {
     try {
-        let {page, limit, from, to, sort, name, ...filter} = {...req.query};
+        let {page, limit, from, to, price, name, ...filter} = {...req.query};
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 20;
         from = parseInt(from) || 0;
         to = parseInt(to) || 2000000;
-        sort = sort || '';
+        price = price || '';
         
         const totalProducts = await Products.countDocuments({
             ...filter,
@@ -21,7 +21,7 @@ productController.getAll = async (req,res,next) => {
         const offset = limit*(page -1);
 
         const products = await Products.find({...filter, name: { $regex: new RegExp(name, "i") } })
-        .sort({price: sort})
+        .sort({price: price})
         .skip(offset)
         .limit(limit)
         .where('price')

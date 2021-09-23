@@ -27,7 +27,7 @@ adminController.getRevenue = async (req,res,next) => {
     try {
         let revenue = await Order.aggregate([
             {$match: {isPaid: true}},
-            {$group: {total: {$sum: "$finalCost"}}}
+            {$group: {_id: "$isPaid", total: {$sum: "$finalCost"}}}
         ])
 
         utilHelper.sendResponse(
@@ -49,11 +49,12 @@ adminController.getPaidOrders = async (req,res,next) => {
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 5;
 
-        const totalOrders = await Order.countDocuments({isPaid: true, isDelivered: false});
+        const totalOrders = await Order.countDocuments({isPaid: true});
         const totalPages = Math.ceil(totalOrders/limit);
         const offset = limit*(page -1);
 
         const orders = await Order.find({isPaid: true, isDelivered: false})
+        .populate('owner')
         .sort({updatedAt: -1})
         .skip(offset)
         .limit(limit)
