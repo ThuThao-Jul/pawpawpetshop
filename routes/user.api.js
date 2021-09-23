@@ -4,11 +4,11 @@ const authMiddleware = require('../middleware/authentication');
 const router = express.Router();
 
 /**
- * @route GET api/user/:id
+ * @route GET api/user/me
  * @description get single profile
  * @access login required
  */
-router.get('/:id', userController.getProfile);
+router.get('/me', authMiddleware.loginRequired, userController.getProfile);
 
 
 /**

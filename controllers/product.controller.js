@@ -5,21 +5,23 @@ const productController = {};
 
 productController.getAll = async (req,res,next) => {
     try {
-        let {page, limit, from, to, ...filter} = {...req.query};
+        let {page, limit, from, to, sort, name, ...filter} = {...req.query};
         page = parseInt(page) || 1;
         limit = parseInt(limit) || 20;
         from = parseInt(from) || 0;
-        to = parseInt(to) || 50000000;
+        to = parseInt(to) || 2000000;
+        sort = sort || 'asc';
 
         const totalProducts = await Products.countDocuments({
             ...filter,
+            name: { $regex: new RegExp(name, "i") },
             $and: [{price: {$gte: from}}, {price: {$lte: to}}],
         });
         const totalPages = Math.ceil(totalProducts/limit);
         const offset = limit*(page -1);
 
-        const products = await Products.find({...filter})
-        .sort({createAt: "desc"})
+        const products = await Products.find({...filter, name: { $regex: new RegExp(name, "i") } })
+        .sort({price: sort})
         .skip(offset)
         .limit(limit)
         .where('price')
@@ -60,12 +62,12 @@ productController.getAllCategories = async(req,res,next)=>{
 productController.getSingleProduct = async(req,res,next)=> {
     try {
         let productId = req.params.id;
-        let product = await Products.find(productId);
+        let product = await Products.findById(productId);
         utilHelper.sendResponse(
             res,
             200,
             true,
-            (product),
+            {product},
             null,
             "Get single product successfully."
         )

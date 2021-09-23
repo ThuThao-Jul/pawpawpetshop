@@ -8,8 +8,7 @@ const userController = {};
 
 userController.getProfile = async (req,res,next)=> {
     try {
-        let id = req.params.id
-        let user = await User.findById(id)
+        let user = await User.findById(req.userId)
         .populate({
             path: 'cart', 
             match: { isDeleted: false },
@@ -46,7 +45,8 @@ userController.getProfile = async (req,res,next)=> {
 userController.addToCart = async(req,res,next)=> {
     try {
         let productId = req.params.id;
-        let { quantity } = req.body;
+        let {quantity} = req.body;
+        quantity = parseInt(quantity);
         let user = await User.findById(req.userId)
         let cartId = '';
           
@@ -66,7 +66,7 @@ userController.addToCart = async(req,res,next)=> {
             } else {
                 //update the quantity if that product has been in cart already & quantity > 0
                 await Cart.findByIdAndUpdate(cartId, {quantity: quantity});
-            }
+            } 
         } else {
             console.log('no duplication')
             // create new cart if there is no duplication
@@ -136,17 +136,17 @@ userController.order= async(req,res,next) =>{
             discount = 0.15;
         }
 
-        let {
-            address,
-            phone
-        } = req.body;
+        // let {
+        //     address,
+        //     phone
+        // } = req.body;
         let finalCost = totalCost*(1-discount);
 
         let order = await Order.create({
             owner: req.userId,
             order: cart,
-            address,
-            phone,
+            // address,
+            // phone,
             totalCost,
             discount,
             finalCost
@@ -166,7 +166,7 @@ userController.order= async(req,res,next) =>{
         await user.save();
 
         //delete cart
-        await Cart.updateMany({owner: req.userId}, {isDeleted: true});
+        // await Cart.updateMany({owner: req.userId}, {isDeleted: true});
         // await User.findByIdAndUpdate(req.userId, {cart: []});
 
         utilHelper.sendResponse(
@@ -210,8 +210,17 @@ userController.deleteOrder= async (req,res,next) => {
 userController.payment= async(req,res,next) => {
     try {
         let orderId = req.params.id;
-        let paid = await Order.findByIdAndUpdate(orderId, {isPaid: true})
+        let {
+            address,
+            phone
+        } = req.body;
+        let paid = await Order.findByIdAndUpdate(orderId, {isPaid: true, address: address, phone: phone})
         .populate('order', ['product', 'quantity']);
+
+        //delete cart
+        await Cart.updateMany({owner: req.userId}, {isDeleted: true});
+        await User.findByIdAndUpdate(req.userId, {cart: []});
+
         
         //update user's point
         let order = await Order.findById(orderId);

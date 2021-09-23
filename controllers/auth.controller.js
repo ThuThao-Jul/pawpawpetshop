@@ -31,7 +31,7 @@ authController.register = async (req,res,next) => {
             res,
             200,
             true,
-            { user, accessToken },
+            { user },
             null,
             "Create new account successfully."
         )
@@ -43,7 +43,13 @@ authController.register = async (req,res,next) => {
 authController.login = async (req,res,next) => {
     try {
         let { email, password } = req.body;
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ email })
+        .populate({
+            path: 'cart', 
+            match: { isDeleted: false },
+            populate: {
+                path: 'product'
+        }});
         if (!user) return next(new Error('401 - Email doesnt exist'));
 
         const isMatch = await bcrypt.compare(password, user.password);

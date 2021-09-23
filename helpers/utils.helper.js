@@ -27,21 +27,21 @@ utilHelper.updatePoint= async (userId, totalCost) => {
     if(point>=800 && tier==='bronze'){
         user = await User.findByIdAndUpdate(userId, {tier: 'silver'});
         user.reward.push({
-            item: '613256c90187fc9cb1e44969',
+            item: '613db72cce10c420bdbce47a',
         });
         await user.save();
     };
     if(point>=3500 && tier==='silver'){
         user = await User.findByIdAndUpdate(userId, {tier: 'gold'});
         user.reward.push({
-            item: '61324cbdf5edc4a41768b08d'
+            item: '613dc734ce10c420bdbce484'
         });
         await user.save();
     };
     if(point>=8000 && tier==='gold'){
         user = await User.findByIdAndUpdate(userId, {tier: 'platinum'});
         user.reward.push({
-            item: '61324cbdf5edc4a41768b08d'
+            item: '613e063fc5b2a7503bd03b97'
         });
         await user.save();
     }

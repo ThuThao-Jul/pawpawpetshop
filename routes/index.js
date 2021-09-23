@@ -32,5 +32,9 @@ router.use('/pet', petApi);
 const competitionApi = require("./competition.api");
 router.use('/competition',competitionApi);
 
+/* Admin endpoint */
+const adminApi = require('./admin.api');
+router.use('/admin', authMiddleware.adminRequired, adminApi);
+
 
 module.exports = router;
