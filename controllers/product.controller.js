@@ -10,8 +10,8 @@ productController.getAll = async (req,res,next) => {
         limit = parseInt(limit) || 20;
         from = parseInt(from) || 0;
         to = parseInt(to) || 2000000;
-        sort = sort || 'asc';
-
+        sort = sort || '';
+        
         const totalProducts = await Products.countDocuments({
             ...filter,
             name: { $regex: new RegExp(name, "i") },
