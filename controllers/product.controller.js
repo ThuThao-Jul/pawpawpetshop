@@ -21,7 +21,7 @@ productController.getAll = async (req,res,next) => {
         const offset = limit*(page -1);
 
         const products = await Products.find({...filter, name: { $regex: new RegExp(name, "i") } })
-        .sort({price: price})
+        .sort('price')
         .skip(offset)
         .limit(limit)
         .where('price')

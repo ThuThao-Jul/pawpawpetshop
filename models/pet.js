@@ -13,7 +13,7 @@ const petSchema = Schema({
         require: true,
     },
     breed: String,
-    images: [{type: String}],
+    image:  String,
     description: String,
     dewormingDate: Date,
     vaccinationRecord: Date,
