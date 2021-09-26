@@ -20,13 +20,13 @@ productController.getAll = async (req,res,next) => {
         const totalPages = Math.ceil(totalProducts/limit);
         const offset = limit*(page -1);
 
-        const products = await Products.find({...filter, name: { $regex: new RegExp(name, "i") } })
+        const products = await Products.find({
+            ...filter, 
+            name: { $regex: new RegExp(name, "i") },
+            $and: [{price: {$gte: from}}, {price: {$lte: to}}] })
         .sort(price)
         .skip(offset)
         .limit(limit)
-        .where('price')
-        .gte(from)
-        .lte(to)
 
         utilHelper.sendResponse(
             res,
