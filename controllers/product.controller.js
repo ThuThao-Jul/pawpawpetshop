@@ -10,7 +10,7 @@ productController.getAll = async (req,res,next) => {
         limit = parseInt(limit) || 20;
         from = parseInt(from) || 0;
         to = parseInt(to) || 2000000;
-        price = 'descending' ? '-price' : 'price';
+        price = price || 'price';
         
         const totalProducts = await Products.countDocuments({
             ...filter,
