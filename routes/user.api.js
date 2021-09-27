@@ -1,6 +1,5 @@
 const express = require('express');
 const userController = require('../controllers/user.controller');
-const authMiddleware = require('../middleware/authentication');
 const router = express.Router();
 
 /**
@@ -8,7 +7,7 @@ const router = express.Router();
  * @description get single profile
  * @access login required
  */
-router.get('/me', authMiddleware.loginRequired, userController.getProfile);
+router.get('/me', userController.getProfile);
 
 
 /**
@@ -48,5 +47,13 @@ router.delete('/order/:id', userController.deleteOrder);
  * @access login required
  */
 router.put('/order/:id', userController.payment);
+
+
+/**
+ * @route GET api/user/orders
+ * @description get paid orders
+ * @access login required
+ */
+ router.get('/orders', userController.getPaidOrders);
 
 module.exports = router;

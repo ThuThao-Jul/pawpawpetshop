@@ -240,4 +240,42 @@ userController.payment= async(req,res,next) => {
     }
 }
 
+userController.getPaidOrders = async (req,res,next) => {
+    try {
+        let userId = req.userId;
+        let {page, limit} = req.query;
+        page = parseInt(page) || 1;
+        limit = parseInt(limit) || 5;
+
+        const totalPaidOrders = await Order.countDocuments({
+            owner: userId,
+            isPaid: true
+        });
+        const totalPages = Math.ceil(totalPaidOrders/limit);
+        const offset = limit*(page -1);
+        const paidOrders = await Order.find({"owner": userId, "isPaid": true})
+        .sort('-updatedAt')
+        .skip(offset)
+        .limit(limit)
+        .populate({
+            path: 'order',
+            populate: {
+                path: 'product', select: 'name'
+            }
+        });
+
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            {paidOrders, totalPages},
+            null,
+            "Get paid orders successfully."
+        )
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports = userController
