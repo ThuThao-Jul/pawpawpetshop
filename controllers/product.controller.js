@@ -10,7 +10,7 @@ productController.getAll = async (req,res,next) => {
         limit = parseInt(limit) || 20;
         from = parseInt(from) || 0;
         to = parseInt(to) || 2000000;
-        price = price || 'price';
+        // price = price || 'price';
         
         const totalProducts = await Products.countDocuments({
             ...filter,
@@ -23,7 +23,7 @@ productController.getAll = async (req,res,next) => {
         const products = await Products.find({
             ...filter, 
             name: { $regex: new RegExp(name, "i") },
-            $and: [{price: {$gte: from}}, {price: {$lte: to}}] })
+            $and: [{price: {$gte: from}}, {price: {$lte: to}}], })
         .sort(price)
         .skip(offset)
         .limit(limit)
