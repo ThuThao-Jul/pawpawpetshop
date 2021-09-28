@@ -31,13 +31,13 @@ router.post('/', authMiddleware.loginRequired, petController.createNewPet);
  * @description update a pet
  * @access login required
  */
-router.put('/:id', petController.updatePet);
+router.put('/:id', authMiddleware.loginRequired, petController.updatePet);
 
 /**
  * @route DELETE api/pet/:id
  * @description delete a pet
  * @access login required
  */
-router.delete('/:id', petController.deletePet);
+router.delete('/:id',authMiddleware.loginRequired, petController.deletePet);
 
 module.exports = router;
