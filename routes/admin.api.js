@@ -23,4 +23,11 @@ const router = express.Router();
  */
  router.put('/orders/:id', adminController.putDelivery);
 
+  /**
+ * @route GET api/admin/revenuebyday
+ * @description get products sold by category
+ * @access admin
+ */
+   router.get('/revenuebyday', adminController.revenueByDay);
+
  module.exports = router;

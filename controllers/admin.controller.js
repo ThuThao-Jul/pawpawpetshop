@@ -1,4 +1,5 @@
 const utilHelper = require('../helpers/utils.helper');
+const Cart = require('../models/cart');
 const Order = require('../models/order')
 const adminController = {};
 
@@ -70,5 +71,30 @@ adminController.getPaidOrders = async (req,res,next) => {
     } catch (error) {
         next(error)
     }
+};
+
+adminController.revenueByDay = async (req,res,next) => {
+    try {
+        let present = new Date();
+        let x = present - 1000*60*60*24*7;
+        let lastSevenDays = new Date(x);
+        let productSold = await Order.aggregate([
+            {$match: {isPaid: true, updatedAt: {$gte: lastSevenDays, $lte: present}}},
+            {$group: {_id: '$updatedAt', total: {$sum: '$finalCost'}}}
+        ]);
+
+        utilHelper.sendResponse(
+            res,
+            200,
+            true,
+            {productSold},
+            null,
+            "Get products sold by category."
+        )
+    } catch (error) {
+        next(error)
+    }
 }
+
+
 module.exports = adminController;
