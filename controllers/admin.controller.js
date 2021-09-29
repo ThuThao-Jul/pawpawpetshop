@@ -78,7 +78,7 @@ adminController.revenueByDay = async (req,res,next) => {
         let present = new Date();
         let x = present - 1000*60*60*24*7;
         let lastSevenDays = new Date(x);
-        let productSold = await Order.aggregate([
+        let revenue = await Order.aggregate([
             {$match: {isPaid: true, updatedAt: {$gte: lastSevenDays, $lte: present}}},
             {$group: {_id: '$updatedAt', total: {$sum: '$finalCost'}}}
         ]);
@@ -87,7 +87,7 @@ adminController.revenueByDay = async (req,res,next) => {
             res,
             200,
             true,
-            {productSold},
+            {revenue},
             null,
             "Get products sold by category."
         )
